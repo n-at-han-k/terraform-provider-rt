@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# The whole build: one RT document in, one deployable provider out.
+#
+# What lands in the repo is COMMITTED -- the Dockerfile compiles what is here,
+# not what a regeneration would produce. Run this, look at the diff, commit it.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+SPEC=reference/openapi-schema-rt/request_tracker_rest2.yaml
+
+# The API description is a SUBMODULE, so the commit that generated this tree
+# is recorded rather than described in prose. Checked out only when missing:
+# `git submodule update` would otherwise rewind a deliberate bump, which is
+# regenerating from the old document and wondering why nothing changed.
+if [ ! -f "$SPEC" ]; then
+  git submodule update --init reference/openapi-schema-rt
+fi
+
+test -f "$SPEC" || { echo "missing $SPEC -- the spec submodule did not check out"; exit 1; }
+
+# Everything under internal/ is generated, and a rename leaves the old file
+# behind -- a stale resource compiles just as well as the new one.
+rm -rf internal/provider internal/client
+
+openapi-generator-rt generate \
+  -i "$SPEC" \
+  -g rt-terraform \
+  -o . \
+  --git-host github.com \
+  --git-user-id n-at-han-k \
+  --git-repo-id terraform-provider-rt \
+  --additional-properties="providerName=rt,providerAddress=ghcr.io/n-at-han-k/rt,providerVersion=1.0.0"
+
+# The generator cannot write a go.sum -- only the toolchain knows the hashes,
+# and the Dockerfile builds with no network for the module cache.
+CGO_ENABLED=0 go mod tidy
+
+CGO_ENABLED=0 go build ./...
+echo "built clean"
