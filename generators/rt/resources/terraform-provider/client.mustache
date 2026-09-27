@@ -56,6 +56,21 @@ func (i RTID) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(i))
 }
 
+// IDFromCreate is the identifier a create answered with: RT puts it in the
+// body ({"id": 5} or {"id": "5"}, as the mood takes it) and everything else
+// puts it in the Location header.
+func IDFromCreate(body []byte, location string) string {
+	var answered struct {
+		ID RTID `json:"id"`
+	}
+
+	if err := json.Unmarshal(body, &answered); err == nil && answered.ID != "" {
+		return string(answered.ID)
+	}
+
+	return IDFromLocation(location)
+}
+
 // APIError is any answer that was not a 2xx, carrying the status alongside the
 // body.
 //

@@ -6,5 +6,5 @@ package client
 type TicketReference struct {
 	Url string `json:"_url,omitempty"`
 	Id RTID `json:"id,omitempty"`
-	Type *ConstantTicket `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 }

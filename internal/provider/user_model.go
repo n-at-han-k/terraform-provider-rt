@@ -40,9 +40,9 @@ type UserModel struct {
 	Country types.String `tfsdk:"country"`
 	Name types.String `tfsdk:"name"`
 	Disabled types.String `tfsdk:"disabled"`
-	Privileged types.String `tfsdk:"privileged"`
+	Privileged types.Int64 `tfsdk:"privileged"`
 	Memberships jsontypes.Normalized `tfsdk:"memberships"`
-	Hyperlinks jsontypes.Normalized `tfsdk:"_hyperlinks"`
+	Hyperlinks jsontypes.Normalized `tfsdk:"hyperlinks"`
 	Password types.String `tfsdk:"password"`
 }
 
@@ -116,6 +116,12 @@ func (m *UserModel) ToClientModel() (*client.UserPostRequest, error) {
 	}
 	if !m.Name.IsNull() && !m.Name.IsUnknown() {
 		out.Name = m.Name.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
+	}
+	if !m.Privileged.IsNull() && !m.Privileged.IsUnknown() {
+		out.Privileged = int64(m.Privileged.ValueInt64())
 	}
 	if !m.Password.IsNull() && !m.Password.IsUnknown() {
 		out.Password = m.Password.ValueString()
@@ -198,6 +204,12 @@ func (m *UserModel) ToUpdateModel() (*client.UserIdNamePutRequest, error) {
 	if !m.Name.IsNull() && !m.Name.IsUnknown() {
 		out.Name = m.Name.ValueString()
 	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
+	}
+	if !m.Privileged.IsNull() && !m.Privileged.IsUnknown() {
+		out.Privileged = int64(m.Privileged.ValueInt64())
+	}
 	return out, nil
 }
 
@@ -260,6 +272,8 @@ func (m *UserModel) FromClientModel(c *client.UserIdNameGet200Response) {
 	m.State = types.StringValue(c.State)
 	m.Country = types.StringValue(c.Country)
 	m.Name = types.StringValue(c.Name)
+	m.Disabled = types.StringValue(c.Disabled)
+	m.Privileged = types.Int64Value(int64(c.Privileged))
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	//

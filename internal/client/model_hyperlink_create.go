@@ -4,5 +4,5 @@ package client
 
 // HyperlinkCreate - Operation to create a ticket
 type HyperlinkCreate struct {
-	Type *ConstantTicket `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 }

@@ -15,6 +15,6 @@ type GroupIdGet200Response struct {
 	Hyperlinks []GroupIdGet200ResponseAllOfHyperlinksInner `json:"_hyperlinks,omitempty"`
 	Domain string `json:"Domain,omitempty"`
 	Instance string `json:"Instance,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 	Members []GroupIdGet200ResponseAllOfMembersInner `json:"Members,omitempty"`
 }

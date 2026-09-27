@@ -102,9 +102,7 @@ func (r *CustomfieldAppliestoResource) Create(ctx context.Context, req resource.
 		return
 	}
 
-	// A create that answers 201 with nothing but a Location header -- RT does
-	// this for tenants and applications. The identifier is in that header, and
-	// everything else the server assigned has to be fetched.
+	// Nothing to read back with: the create's own answer is all there is.
 	if len(respBody) == 0 {
 		plan.Id = types.StringValue(client.IDFromLocation(location))
 	}

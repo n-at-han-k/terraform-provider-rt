@@ -5,5 +5,5 @@ package client
 // HyperlinkTicketLink - A link to another ticket
 type HyperlinkTicketLink struct {
 	Id RTID `json:"id,omitempty"`
-	Type *ConstantTicket `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 }

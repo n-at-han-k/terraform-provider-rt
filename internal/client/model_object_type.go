@@ -4,5 +4,5 @@ package client
 
 // ObjectType - Object containing type field.
 type ObjectType struct {
-	Type *TypeEnum `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 }

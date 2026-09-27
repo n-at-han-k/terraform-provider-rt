@@ -43,6 +43,32 @@ The rest of the document is lists, searches and verb paths, which a resource
 never calls — see [crossplane-provider-rt]'s README for the accounting; the
 grouping is the same.
 
+## Running the tests
+
+The spec submodule carries a disposable RT — the same image the document was
+reverse engineered against — so an apply can be run against a real server
+rather than a mock.
+
+```bash
+docker compose -f reference/openapi-schema-rt/docker-compose.yml up -d
+docker compose -f reference/openapi-schema-rt/docker-compose.yml logs -f rt-init  # until "Done"
+TF_ACC=1 make testacc
+docker compose -f reference/openapi-schema-rt/docker-compose.yml down -v
+```
+
+terraform itself is BUSL and unfree, so the flake ships **tofu** and the test
+points the framework at it (`TF_ACC_TERRAFORM_PATH`), along with the provider
+address tofu will accept for a provider it is handed rather than fetching.
+`RT_URL` overrides the endpoint; the default is the compose one.
+
+`test/` lives outside `internal/` because `bin/generate` clears `internal/` on
+every run — a check kept in there is deleted by the next regeneration, which
+is exactly when you want it. It is what found the four bugs the generator now
+does not have: a `_hyperlinks` attribute Terraform refuses outright, RT's
+string-enum `perlBoolean` rendered as an empty struct nothing could convert, a
+create whose 201 answers an id rather than the resource, and an update whose
+answer is a list of what it changed.
+
 ## Credentials
 
 RT's base path is relative in the document, so the endpoint is the one thing
@@ -129,6 +155,10 @@ resolves the provider from.
   the response answers is computed; that inference is the whole rule.
 - `examples/provider/provider.tf` is upstream's and repeats the document's
   relative base path. Set a real endpoint, as above.
+- `rt_group_member` and `rt_user_group` carry the owning id and nothing else:
+  `PUT /group/{id}/members` takes a bare array of principal ids, and a body
+  that is not an object has no fields to make attributes out of.
+  crossplane-provider-rt has the same gap for the same reason.
 - A right cannot be revoked. Granting is `POST …/rights`; revoking needs
   `DELETE …/rights/{right}/group/{id}`, whose path the generator cannot
   derive from the grant it was given.

@@ -127,17 +127,19 @@ func (r *CustomfieldValueResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	// A create that answers 201 with nothing but a Location header -- RT does
-	// this for tenants and applications. The identifier is in that header, and
-	// everything else the server assigned has to be fetched.
-	if len(respBody) == 0 {
-		plan.Id = types.StringValue(client.IDFromLocation(location))
+	// RT's create answers a 201 whose body is an identifier and a link, not
+	// the resource -- and sometimes only a Location header. Either way what
+	// was created has to be READ BACK, not taken from the create's own
+	// answer: taking it wrote empty strings over the values just sent,
+	// "provider produced inconsistent result after apply".
+	if created := client.IDFromCreate(respBody, location); created != "" {
+		plan.Id = types.StringValue(created)
+	}
 
-		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/customfield/%v/value/%v", plan.Id.ValueString(), plan.Id.ValueString()), nil)
-		if err != nil {
-			resp.Diagnostics.AddError("Error reading back the created customfield_value", err.Error())
-			return
-		}
+	respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/customfield/%v/value/%v", plan.Id.ValueString(), plan.Id.ValueString()), nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading back the created customfield_value", err.Error())
+		return
 	}
 
 	if len(respBody) > 0 {
@@ -233,16 +235,15 @@ func (r *CustomfieldValueResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	// An update that answers no body: PUT /tenants/{id}/owners/{id} is a 200
-	// and nothing, every time. Unmarshalling that is "Error parsing response"
-	// AFTER the server has already accepted the change -- so the write looks
-	// like a failure and the new value never reaches state.
-	if len(respBody) == 0 {
-		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/customfield/%v/value/%v", state.Id.ValueString(), state.Id.ValueString()), nil)
-		if err != nil {
-			resp.Diagnostics.AddError("Error reading back the updated customfield_value", err.Error())
-			return
-		}
+	// AN UPDATE'S ANSWER IS NOT THE READ'S. RT answers a PUT with the list of
+	// changes it made -- ["Description changed from 'a' to 'b'"] -- and some
+	// updates answer nothing at all; neither is the resource, and
+	// unmarshalling either one is "Error parsing response" AFTER the server
+	// has already accepted the change. What it now looks like is read back.
+	respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/customfield/%v/value/%v", state.Id.ValueString(), state.Id.ValueString()), nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading back the updated customfield_value", err.Error())
+		return
 	}
 
 	if len(respBody) > 0 {

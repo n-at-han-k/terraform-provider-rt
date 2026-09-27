@@ -36,6 +36,9 @@ func (m *CatalogModel) ToClientModel() (*client.CatalogPostRequest, error) {
 	if !m.Lifecycle.IsNull() && !m.Lifecycle.IsUnknown() {
 		out.Lifecycle = m.Lifecycle.ValueString()
 	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
+	}
 	return out, nil
 }
 
@@ -57,6 +60,9 @@ func (m *CatalogModel) ToUpdateModel() (*client.CatalogPropertiesCommon, error) 
 	}
 	if !m.Lifecycle.IsNull() && !m.Lifecycle.IsUnknown() {
 		out.Lifecycle = m.Lifecycle.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	return out, nil
 }
@@ -108,4 +114,5 @@ func (m *CatalogModel) FromClientModel(c *client.CatalogIdNameGet200Response) {
 	m.Name = types.StringValue(c.Name)
 	m.Description = types.StringValue(c.Description)
 	m.Lifecycle = types.StringValue(c.Lifecycle)
+	m.Disabled = types.StringValue(c.Disabled)
 }

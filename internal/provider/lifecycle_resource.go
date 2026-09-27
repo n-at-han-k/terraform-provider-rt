@@ -63,14 +63,17 @@ func (r *LifecycleResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Description: "Statuses meaning work has stopped.",
 			},
 			"defaults": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Which status an action moves an object to.",
 			},
 			"transitions": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Which statuses each status may move to. The empty key is the transition into the lifecycle.",
 			},
 			"rights": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "The right required to make a transition.",
 			},
@@ -80,6 +83,7 @@ func (r *LifecycleResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Description: "The transitions offered in the UI, as alternating \"from -> to\" strings and their configuration.",
 			},
 			"colors": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "A colour per status, as shown in the UI.",
 			},
@@ -88,10 +92,11 @@ func (r *LifecycleResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 				Description: "",
 			},
 			"canonical_case": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "The capitalisation RT treats as canonical for each status, keyed by the lower-case form.",
 			},
-			"_url": schema.StringAttribute{
+			"url": schema.StringAttribute{
 				Computed:    true,
 				Description: "An URL pointing somewhere in the web",
 			},
@@ -136,17 +141,19 @@ func (r *LifecycleResource) Create(ctx context.Context, req resource.CreateReque
 		return
 	}
 
-	// A create that answers 201 with nothing but a Location header -- RT does
-	// this for tenants and applications. The identifier is in that header, and
-	// everything else the server assigned has to be fetched.
-	if len(respBody) == 0 {
-		plan.Name = types.StringValue(client.IDFromLocation(location))
+	// RT's create answers a 201 whose body is an identifier and a link, not
+	// the resource -- and sometimes only a Location header. Either way what
+	// was created has to be READ BACK, not taken from the create's own
+	// answer: taking it wrote empty strings over the values just sent,
+	// "provider produced inconsistent result after apply".
+	if created := client.IDFromCreate(respBody, location); created != "" {
+		plan.Name = types.StringValue(created)
+	}
 
-		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/lifecycle/%v", plan.Name.ValueString()), nil)
-		if err != nil {
-			resp.Diagnostics.AddError("Error reading back the created lifecycle", err.Error())
-			return
-		}
+	respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/lifecycle/%v", plan.Name.ValueString()), nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading back the created lifecycle", err.Error())
+		return
 	}
 
 	if len(respBody) > 0 {
@@ -242,16 +249,15 @@ func (r *LifecycleResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
-	// An update that answers no body: PUT /tenants/{id}/owners/{id} is a 200
-	// and nothing, every time. Unmarshalling that is "Error parsing response"
-	// AFTER the server has already accepted the change -- so the write looks
-	// like a failure and the new value never reaches state.
-	if len(respBody) == 0 {
-		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/lifecycle/%v", state.Name.ValueString()), nil)
-		if err != nil {
-			resp.Diagnostics.AddError("Error reading back the updated lifecycle", err.Error())
-			return
-		}
+	// AN UPDATE'S ANSWER IS NOT THE READ'S. RT answers a PUT with the list of
+	// changes it made -- ["Description changed from 'a' to 'b'"] -- and some
+	// updates answer nothing at all; neither is the resource, and
+	// unmarshalling either one is "Error parsing response" AFTER the server
+	// has already accepted the change. What it now looks like is read back.
+	respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/lifecycle/%v", state.Name.ValueString()), nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading back the updated lifecycle", err.Error())
+		return
 	}
 
 	if len(respBody) > 0 {

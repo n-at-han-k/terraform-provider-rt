@@ -16,10 +16,10 @@ type CustomfieldIdGet200Response struct {
 	ValidationHint string `json:"ValidationHint,omitempty"`
 	Description string `json:"Description,omitempty"`
 	EntryHint string `json:"EntryHint,omitempty"`
-	UniqueValues *PerlBoolean `json:"UniqueValues,omitempty"`
+	UniqueValues string `json:"UniqueValues,omitempty"`
 	Pattern string `json:"Pattern,omitempty"`
 	SortOrder string `json:"SortOrder,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 	Values []string `json:"Values,omitempty"`
 	Hyperlinks []CustomfieldIdGet200ResponseAllOfHyperlinksInner `json:"_hyperlinks,omitempty"`
 	MaxValues string `json:"MaxValues,omitempty"`

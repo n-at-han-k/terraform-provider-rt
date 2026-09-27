@@ -119,7 +119,7 @@ func (r *QueueResource) Schema(_ context.Context, _ resource.SchemaRequest, resp
 				Optional:    true,
 				Description: "",
 			},
-			"_hyperlinks": schema.StringAttribute{
+			"hyperlinks": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Things and operations related to this queue.",
@@ -180,17 +180,19 @@ func (r *QueueResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	// A create that answers 201 with nothing but a Location header -- RT does
-	// this for tenants and applications. The identifier is in that header, and
-	// everything else the server assigned has to be fetched.
-	if len(respBody) == 0 {
-		plan.Id = types.StringValue(client.IDFromLocation(location))
+	// RT's create answers a 201 whose body is an identifier and a link, not
+	// the resource -- and sometimes only a Location header. Either way what
+	// was created has to be READ BACK, not taken from the create's own
+	// answer: taking it wrote empty strings over the values just sent,
+	// "provider produced inconsistent result after apply".
+	if created := client.IDFromCreate(respBody, location); created != "" {
+		plan.Id = types.StringValue(created)
+	}
 
-		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/queue/%v", plan.Id.ValueString()), nil)
-		if err != nil {
-			resp.Diagnostics.AddError("Error reading back the created queue", err.Error())
-			return
-		}
+	respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/queue/%v", plan.Id.ValueString()), nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading back the created queue", err.Error())
+		return
 	}
 
 	if len(respBody) > 0 {
@@ -286,16 +288,15 @@ func (r *QueueResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	// An update that answers no body: PUT /tenants/{id}/owners/{id} is a 200
-	// and nothing, every time. Unmarshalling that is "Error parsing response"
-	// AFTER the server has already accepted the change -- so the write looks
-	// like a failure and the new value never reaches state.
-	if len(respBody) == 0 {
-		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/queue/%v", state.Id.ValueString()), nil)
-		if err != nil {
-			resp.Diagnostics.AddError("Error reading back the updated queue", err.Error())
-			return
-		}
+	// AN UPDATE'S ANSWER IS NOT THE READ'S. RT answers a PUT with the list of
+	// changes it made -- ["Description changed from 'a' to 'b'"] -- and some
+	// updates answer nothing at all; neither is the resource, and
+	// unmarshalling either one is "Error parsing response" AFTER the server
+	// has already accepted the change. What it now looks like is read back.
+	respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/queue/%v", state.Id.ValueString()), nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading back the updated queue", err.Error())
+		return
 	}
 
 	if len(respBody) > 0 {

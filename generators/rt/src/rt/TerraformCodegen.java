@@ -550,6 +550,17 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         for (Map<String, Object> attribute : attributes) {
             String terraformName = String.valueOf(attribute.get("terraformName"));
 
+            // A tfsdk name must START WITH A LETTER, and RT answers every
+            // object's links under `_hyperlinks`: "invalid tfsdk tag, must
+            // only use lowercase letters, underscores, and numbers, and must
+            // start with a letter", on every apply. The Go field and the JSON
+            // key are untouched -- only the name a configuration spells.
+            if (!terraformName.isEmpty() && !Character.isLetter(terraformName.charAt(0))) {
+                terraformName = terraformName.replaceAll("^[^a-z]+", "");
+                attribute.put("terraformName",
+                        terraformName.isEmpty() ? "api_field" : terraformName);
+            }
+
             if (RESERVED.contains(terraformName)) {
                 // The Go field and the JSON key are untouched; only the name
                 // configuration spells it moves out of Terraform's way.
@@ -825,7 +836,18 @@ public class TerraformCodegen extends TerraformProviderCodegen {
 
     /** A list or an object travels as JSON; the templates convert those. */
     private void retype(Map<String, Object> attribute) {
-        if (!Boolean.TRUE.equals(attribute.get("isList"))
+        String go = String.valueOf(attribute.get("goType"));
+
+        // A Go type that is not a named one either: an `interface{}` -- which
+        // is what a union of shapes comes out as -- or a bare map or slice.
+        // Left alone, none of the attribute's type flags is set and the
+        // templates emit nothing at all for it, including the assignment that
+        // has to resolve a Computed attribute's UNKNOWN: "syntax error,
+        // unexpected }".
+        boolean freeform = go.startsWith("interface{") || go.startsWith("map[")
+                || go.startsWith("[]");
+
+        if (!freeform && !Boolean.TRUE.equals(attribute.get("isList"))
                 && !Boolean.TRUE.equals(attribute.get("isObject"))) {
             return;
         }
@@ -835,10 +857,7 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         // narrows it, so the property is flagged a model and the Go field is
         // a string. Declaring that one jsontypes.Normalized gave a model
         // struct the conversions could not assign to.
-        String scalar = String.valueOf(attribute.get("goType"));
-        if (scalar.startsWith("*")) {
-            scalar = scalar.substring(1);
-        }
+        String scalar = go.startsWith("*") ? go.substring(1) : go;
         if (Arrays.asList("string", "bool", "int", "int32", "int64", "float32", "float64")
                 .contains(scalar)) {
             attribute.put("isList", false);
@@ -1057,6 +1076,90 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         }
 
         return processed;
+    }
+
+    /**
+     * A named schema that is not an object is not a struct.
+     *
+     * RT's {@code perlBoolean} is a string enum -- "1" or "0", because RT
+     * does not translate perl's booleans -- and {@code ticketLink} is an
+     * anyOf of an integer and an array. openapi-generator gives each of them
+     * a model of its own, and the template renders a model as a struct, so
+     * both came out as {@code type PerlBoolean struct{}}. A queue's
+     * {@code Disabled} was then a field of that type: nothing could convert
+     * it, so the attribute stayed UNKNOWN through an apply -- "provider
+     * returned invalid result object after apply".
+     *
+     * A model with no properties at all is whatever it actually is: the
+     * scalar an enum enumerates, or {@code interface{}} for a union of
+     * shapes, which travels as JSON.
+     *
+     * This runs over ALL models, because a property cannot see the model its
+     * type names.
+     */
+    @Override
+    public Map<String, ModelsMap> postProcessAllModels(Map<String, ModelsMap> models) {
+        Map<String, ModelsMap> processed = super.postProcessAllModels(models);
+
+        Map<String, String> notStructs = new LinkedHashMap<>();
+
+        for (ModelsMap entry : processed.values()) {
+            for (ModelMap map : entry.getModels()) {
+                CodegenModel model = map.getModel();
+                boolean empty = (model.vars == null || model.vars.isEmpty())
+                        && (model.allVars == null || model.allVars.isEmpty());
+
+                if (!empty) {
+                    continue;
+                }
+
+                notStructs.put(model.classname, scalarOf(model));
+            }
+        }
+
+        for (ModelsMap entry : processed.values()) {
+            for (ModelMap map : entry.getModels()) {
+                CodegenModel model = map.getModel();
+                List<CodegenProperty> properties = new ArrayList<>(model.vars);
+
+                if (model.allVars != null) {
+                    properties.addAll(model.allVars);
+                }
+
+                for (CodegenProperty property : properties) {
+                    String named = property.dataType == null ? "" : property.dataType;
+                    boolean pointed = named.startsWith("*");
+                    String bare = pointed ? named.substring(1) : named;
+                    String scalar = notStructs.get(bare);
+
+                    if (scalar != null) {
+                        property.dataType = scalar;
+                        property.isModel = false;
+                    }
+                }
+            }
+        }
+
+        return processed;
+    }
+
+    /** What a model with no properties of its own actually is. */
+    private String scalarOf(CodegenModel model) {
+        if (model.isString || "string".equals(model.dataType)) {
+            return "string";
+        }
+        if (model.isInteger || model.isLong) {
+            return "int64";
+        }
+        if (model.isNumber || model.isFloat || model.isDouble) {
+            return "float64";
+        }
+        if (model.isBoolean) {
+            return "bool";
+        }
+        // A union of shapes -- ticketLink is an integer or an array -- has
+        // nothing better, and travels as JSON.
+        return "interface{}";
     }
 
     /**

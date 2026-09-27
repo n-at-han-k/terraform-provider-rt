@@ -14,7 +14,7 @@ type ArticleIdGet200Response struct {
 	Summary string `json:"Summary,omitempty"`
 	SortOrder string `json:"SortOrder,omitempty"`
 	Class *ClassReference `json:"Class,omitempty"`
-	Parent *ArticleIdGet200ResponseAllOfParent `json:"Parent,omitempty"`
+	Parent interface{} `json:"Parent,omitempty"`
 	URI string `json:"URI,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 }

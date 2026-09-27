@@ -7,5 +7,5 @@ type ClassPostRequest struct {
 	Name string `json:"Name,omitempty"`
 	Description string `json:"Description,omitempty"`
 	SortOrder string `json:"SortOrder,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 }

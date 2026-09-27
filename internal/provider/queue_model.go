@@ -28,7 +28,7 @@ type QueueModel struct {
 	CommentAddress types.String `tfsdk:"comment_address"`
 	Disabled types.String `tfsdk:"disabled"`
 	Lifecycle types.String `tfsdk:"api_lifecycle"`
-	Hyperlinks jsontypes.Normalized `tfsdk:"_hyperlinks"`
+	Hyperlinks jsontypes.Normalized `tfsdk:"hyperlinks"`
 	CorrespondAddress types.String `tfsdk:"correspond_address"`
 	TicketTransactionCustomFields jsontypes.Normalized `tfsdk:"ticket_transaction_custom_fields"`
 	SubjectTag types.String `tfsdk:"subject_tag"`
@@ -37,6 +37,9 @@ type QueueModel struct {
 // ToClientModel converts a Terraform model to a client model.
 func (m *QueueModel) ToClientModel() (*client.QueuePostRequest, error) {
 	out := &client.QueuePostRequest{}
+	if !m.SLADisabled.IsNull() && !m.SLADisabled.IsUnknown() {
+		out.SLADisabled = m.SLADisabled.ValueString()
+	}
 	if !m.SortOrder.IsNull() && !m.SortOrder.IsUnknown() {
 		out.SortOrder = m.SortOrder.ValueString()
 	}
@@ -48,6 +51,9 @@ func (m *QueueModel) ToClientModel() (*client.QueuePostRequest, error) {
 	}
 	if !m.CommentAddress.IsNull() && !m.CommentAddress.IsUnknown() {
 		out.CommentAddress = m.CommentAddress.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	if !m.Lifecycle.IsNull() && !m.Lifecycle.IsUnknown() {
 		out.Lifecycle = m.Lifecycle.ValueString()
@@ -71,6 +77,9 @@ func (m *QueueModel) ToClientModel() (*client.QueuePostRequest, error) {
 // generator only emits the ones it has.
 func (m *QueueModel) ToUpdateModel() (*client.QueueIdNamePutRequest, error) {
 	out := &client.QueueIdNamePutRequest{}
+	if !m.SLADisabled.IsNull() && !m.SLADisabled.IsUnknown() {
+		out.SLADisabled = m.SLADisabled.ValueString()
+	}
 	if !m.SortOrder.IsNull() && !m.SortOrder.IsUnknown() {
 		out.SortOrder = m.SortOrder.ValueString()
 	}
@@ -82,6 +91,9 @@ func (m *QueueModel) ToUpdateModel() (*client.QueueIdNamePutRequest, error) {
 	}
 	if !m.CommentAddress.IsNull() && !m.CommentAddress.IsUnknown() {
 		out.CommentAddress = m.CommentAddress.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	if !m.Lifecycle.IsNull() && !m.Lifecycle.IsUnknown() {
 		out.Lifecycle = m.Lifecycle.ValueString()
@@ -139,6 +151,7 @@ func (m *QueueModel) FromClientModel(c *client.QueueIdNameGet200Response) {
 			m.CustomFields = jsontypes.NewNormalizedValue(string(encoded))
 		}
 	}
+	m.SLADisabled = types.StringValue(c.SLADisabled)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	//
@@ -182,6 +195,7 @@ func (m *QueueModel) FromClientModel(c *client.QueueIdNameGet200Response) {
 		}
 	}
 	m.CommentAddress = types.StringValue(c.CommentAddress)
+	m.Disabled = types.StringValue(c.Disabled)
 	m.Lifecycle = types.StringValue(c.Lifecycle)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.

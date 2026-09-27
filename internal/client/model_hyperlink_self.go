@@ -5,5 +5,5 @@ package client
 // HyperlinkSelf - Link to self. Type will vary depending on where you got this from.
 type HyperlinkSelf struct {
 	Id RTID `json:"id,omitempty"`
-	Type *TypeEnum `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 }

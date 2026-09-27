@@ -7,6 +7,6 @@ type CustomFieldsAppliedInner struct {
 	Id RTID `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 	Ref string `json:"ref,omitempty"`
-	Type *ConstantCustomField `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 	Url string `json:"_url,omitempty"`
 }

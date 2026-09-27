@@ -6,6 +6,6 @@ package client
 type QueueIdNameGet200ResponseAllOfHyperlinksInner struct {
 	Ref string `json:"ref,omitempty"`
 	Url string `json:"_url,omitempty"`
-	Type *TypeEnum `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 	Id RTID `json:"id,omitempty"`
 }

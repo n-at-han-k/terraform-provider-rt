@@ -105,7 +105,7 @@ func (d *CustomfieldDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				Computed:    true,
 				Description: "",
 			},
-			"_hyperlinks": schema.StringAttribute{
+			"hyperlinks": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Things and operations related to this ticket. Probably contains multiple lifecycle operations.",

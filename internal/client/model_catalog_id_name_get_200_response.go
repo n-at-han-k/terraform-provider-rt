@@ -13,5 +13,5 @@ type CatalogIdNameGet200Response struct {
 	Name string `json:"Name,omitempty"`
 	Description string `json:"Description,omitempty"`
 	Lifecycle string `json:"Lifecycle,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 }

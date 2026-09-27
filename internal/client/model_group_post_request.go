@@ -6,5 +6,5 @@ package client
 type GroupPostRequest struct {
 	Name string `json:"Name,omitempty"`
 	Description string `json:"Description,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 }

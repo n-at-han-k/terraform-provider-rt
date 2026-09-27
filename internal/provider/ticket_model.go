@@ -38,7 +38,7 @@ type TicketModel struct {
 	AdminCc jsontypes.Normalized `tfsdk:"admin_cc"`
 	Type types.String `tfsdk:"type"`
 	Status types.String `tfsdk:"status"`
-	Hyperlinks jsontypes.Normalized `tfsdk:"_hyperlinks"`
+	Hyperlinks jsontypes.Normalized `tfsdk:"hyperlinks"`
 	DependsOn jsontypes.Normalized `tfsdk:"api_depends_on"`
 	Child jsontypes.Normalized `tfsdk:"child"`
 	ReferredToBy jsontypes.Normalized `tfsdk:"referred_to_by"`
@@ -321,6 +321,7 @@ func (m *TicketModel) FromClientModel(c *client.TicketIdGet200Response) {
 	if m.AdminCc.IsUnknown() {
 		m.AdminCc = jsontypes.NewNormalizedNull()
 	}
+	m.Type = types.StringValue(c.Type)
 	m.Status = types.StringValue(c.Status)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.

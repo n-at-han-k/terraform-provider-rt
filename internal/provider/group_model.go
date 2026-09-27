@@ -20,7 +20,7 @@ type GroupModel struct {
 	CustomFields jsontypes.Normalized `tfsdk:"custom_fields"`
 	Name types.String `tfsdk:"name"`
 	Description types.String `tfsdk:"description"`
-	Hyperlinks jsontypes.Normalized `tfsdk:"_hyperlinks"`
+	Hyperlinks jsontypes.Normalized `tfsdk:"hyperlinks"`
 	Domain types.String `tfsdk:"domain"`
 	Instance types.String `tfsdk:"instance"`
 	Disabled types.String `tfsdk:"disabled"`
@@ -35,6 +35,9 @@ func (m *GroupModel) ToClientModel() (*client.GroupPostRequest, error) {
 	}
 	if !m.Description.IsNull() && !m.Description.IsUnknown() {
 		out.Description = m.Description.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	return out, nil
 }
@@ -54,6 +57,9 @@ func (m *GroupModel) ToUpdateModel() (*client.GroupIdPutRequest, error) {
 	}
 	if !m.Description.IsNull() && !m.Description.IsUnknown() {
 		out.Description = m.Description.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	return out, nil
 }
@@ -119,6 +125,7 @@ func (m *GroupModel) FromClientModel(c *client.GroupIdGet200Response) {
 	}
 	m.Domain = types.StringValue(c.Domain)
 	m.Instance = types.StringValue(c.Instance)
+	m.Disabled = types.StringValue(c.Disabled)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	//

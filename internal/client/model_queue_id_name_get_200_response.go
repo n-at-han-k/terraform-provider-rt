@@ -10,7 +10,7 @@ type QueueIdNameGet200Response struct {
 	LastUpdated string `json:"LastUpdated,omitempty"`
 	LastUpdatedBy *UserReference `json:"LastUpdatedBy,omitempty"`
 	CustomFields []CustomFieldsArrayInner `json:"CustomFields,omitempty"`
-	SLADisabled *PerlBoolean `json:"SLADisabled,omitempty"`
+	SLADisabled string `json:"SLADisabled,omitempty"`
 	Cc []UserReference `json:"Cc,omitempty"`
 	AdminCc []UserReference `json:"AdminCc,omitempty"`
 	SortOrder string `json:"SortOrder,omitempty"`
@@ -18,7 +18,7 @@ type QueueIdNameGet200Response struct {
 	Description string `json:"Description,omitempty"`
 	TicketCustomFields []CustomFieldsAppliedInner `json:"TicketCustomFields,omitempty"`
 	CommentAddress string `json:"CommentAddress,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 	Lifecycle string `json:"Lifecycle,omitempty"`
 	Hyperlinks []QueueIdNameGet200ResponseAllOfHyperlinksInner `json:"_hyperlinks,omitempty"`
 	CorrespondAddress string `json:"CorrespondAddress,omitempty"`

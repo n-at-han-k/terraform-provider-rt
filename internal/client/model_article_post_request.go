@@ -11,5 +11,5 @@ type ArticlePostRequest struct {
 	SortOrder string `json:"SortOrder,omitempty"`
 	Parent int32 `json:"Parent,omitempty"`
 	URI string `json:"URI,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 }

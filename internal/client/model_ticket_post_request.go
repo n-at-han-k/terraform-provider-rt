@@ -5,12 +5,12 @@ package client
 // TicketPostRequest - TicketPostRequest struct
 type TicketPostRequest struct {
 	CustomFields map[string]CustomFieldsUploadCustomFieldsValue `json:"CustomFields,omitempty"`
-	DependsOn *TicketLink `json:"DependsOn,omitempty"`
-	Child *TicketLink `json:"Child,omitempty"`
-	ReferredToBy *TicketLink `json:"ReferredToBy,omitempty"`
-	Parent *TicketLink `json:"Parent,omitempty"`
-	DependedOnBy *TicketLink `json:"DependedOnBy,omitempty"`
-	RefersTo *TicketLink `json:"RefersTo,omitempty"`
+	DependsOn interface{} `json:"DependsOn,omitempty"`
+	Child interface{} `json:"Child,omitempty"`
+	ReferredToBy interface{} `json:"ReferredToBy,omitempty"`
+	Parent interface{} `json:"Parent,omitempty"`
+	DependedOnBy interface{} `json:"DependedOnBy,omitempty"`
+	RefersTo interface{} `json:"RefersTo,omitempty"`
 	Subject string `json:"Subject,omitempty"`
 	Owner string `json:"Owner,omitempty"`
 	Requestor string `json:"Requestor,omitempty"`

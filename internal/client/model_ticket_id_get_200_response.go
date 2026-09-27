@@ -27,7 +27,7 @@ type TicketIdGet200Response struct {
 	Requestor []UserReference `json:"Requestor,omitempty"`
 	Cc []interface{} `json:"Cc,omitempty"`
 	AdminCc []interface{} `json:"AdminCc,omitempty"`
-	Type *ConstantTicket `json:"Type,omitempty"`
+	Type string `json:"Type,omitempty"`
 	Status string `json:"Status,omitempty"`
 	Hyperlinks []TicketIdGet200ResponseAllOfHyperlinksInner `json:"_hyperlinks,omitempty"`
 }

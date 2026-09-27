@@ -6,5 +6,5 @@ package client
 type CustomFieldReference struct {
 	Url string `json:"_url,omitempty"`
 	Id RTID `json:"id,omitempty"`
-	Type *ConstantCustomField `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 }

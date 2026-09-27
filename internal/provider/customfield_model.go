@@ -29,7 +29,7 @@ type CustomfieldModel struct {
 	SortOrder types.String `tfsdk:"sort_order"`
 	Disabled types.String `tfsdk:"disabled"`
 	Values jsontypes.Normalized `tfsdk:"values"`
-	Hyperlinks jsontypes.Normalized `tfsdk:"_hyperlinks"`
+	Hyperlinks jsontypes.Normalized `tfsdk:"hyperlinks"`
 	MaxValues types.String `tfsdk:"max_values"`
 }
 
@@ -57,11 +57,17 @@ func (m *CustomfieldModel) ToClientModel() (*client.CustomfieldPostRequest, erro
 	if !m.EntryHint.IsNull() && !m.EntryHint.IsUnknown() {
 		out.EntryHint = m.EntryHint.ValueString()
 	}
+	if !m.UniqueValues.IsNull() && !m.UniqueValues.IsUnknown() {
+		out.UniqueValues = m.UniqueValues.ValueString()
+	}
 	if !m.Pattern.IsNull() && !m.Pattern.IsUnknown() {
 		out.Pattern = m.Pattern.ValueString()
 	}
 	if !m.SortOrder.IsNull() && !m.SortOrder.IsUnknown() {
 		out.SortOrder = m.SortOrder.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	if !m.MaxValues.IsNull() && !m.MaxValues.IsUnknown() {
 		out.MaxValues = m.MaxValues.ValueString()
@@ -100,11 +106,17 @@ func (m *CustomfieldModel) ToUpdateModel() (*client.CustomfieldIdPutRequest, err
 	if !m.EntryHint.IsNull() && !m.EntryHint.IsUnknown() {
 		out.EntryHint = m.EntryHint.ValueString()
 	}
+	if !m.UniqueValues.IsNull() && !m.UniqueValues.IsUnknown() {
+		out.UniqueValues = m.UniqueValues.ValueString()
+	}
 	if !m.Pattern.IsNull() && !m.Pattern.IsUnknown() {
 		out.Pattern = m.Pattern.ValueString()
 	}
 	if !m.SortOrder.IsNull() && !m.SortOrder.IsUnknown() {
 		out.SortOrder = m.SortOrder.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	if !m.MaxValues.IsNull() && !m.MaxValues.IsUnknown() {
 		out.MaxValues = m.MaxValues.ValueString()
@@ -150,8 +162,10 @@ func (m *CustomfieldModel) FromClientModel(c *client.CustomfieldIdGet200Response
 	m.ValidationHint = types.StringValue(c.ValidationHint)
 	m.Description = types.StringValue(c.Description)
 	m.EntryHint = types.StringValue(c.EntryHint)
+	m.UniqueValues = types.StringValue(c.UniqueValues)
 	m.Pattern = types.StringValue(c.Pattern)
 	m.SortOrder = types.StringValue(c.SortOrder)
+	m.Disabled = types.StringValue(c.Disabled)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	//

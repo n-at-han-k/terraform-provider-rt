@@ -35,6 +35,9 @@ func (m *ClassModel) ToClientModel() (*client.ClassPostRequest, error) {
 	if !m.SortOrder.IsNull() && !m.SortOrder.IsUnknown() {
 		out.SortOrder = m.SortOrder.ValueString()
 	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
+	}
 	return out, nil
 }
 
@@ -56,6 +59,9 @@ func (m *ClassModel) ToUpdateModel() (*client.ClassPropertiesCommon, error) {
 	}
 	if !m.SortOrder.IsNull() && !m.SortOrder.IsUnknown() {
 		out.SortOrder = m.SortOrder.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	return out, nil
 }
@@ -94,4 +100,5 @@ func (m *ClassModel) FromClientModel(c *client.ClassIdNameGet200Response) {
 	m.Name = types.StringValue(c.Name)
 	m.Description = types.StringValue(c.Description)
 	m.SortOrder = types.StringValue(c.SortOrder)
+	m.Disabled = types.StringValue(c.Disabled)
 }

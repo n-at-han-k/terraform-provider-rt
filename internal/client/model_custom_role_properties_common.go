@@ -9,5 +9,5 @@ type CustomRolePropertiesCommon struct {
 	MaxValues string `json:"MaxValues,omitempty"`
 	EntryHint string `json:"EntryHint,omitempty"`
 	LookupType string `json:"LookupType,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 }

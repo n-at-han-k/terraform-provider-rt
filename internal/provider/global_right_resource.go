@@ -96,14 +96,8 @@ func (r *GlobalRightResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	// A create that answers 201 with nothing but a Location header -- RT does
-	// this for tenants and applications. The identifier is in that header, and
-	// everything else the server assigned has to be fetched.
-	if len(respBody) == 0 {
-		// Nothing in this resource's schema holds an identifier, so the
-		// Location header has nowhere to go.
-		_ = location
-	}
+	// Nothing to read back with: the create's own answer is all there is.
+	_ = location
 
 	if len(respBody) > 0 {
 		var result client.QueueIdNameRightsPost201Response

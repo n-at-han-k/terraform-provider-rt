@@ -143,7 +143,7 @@ func (d *TicketDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Computed:    true,
 				Description: "The values of this field depend on the lifecycle in use.",
 			},
-			"_hyperlinks": schema.StringAttribute{
+			"hyperlinks": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Things and operations related to this ticket. Probably contains multiple lifecycle operations.",

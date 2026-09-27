@@ -30,8 +30,8 @@ type UserIdNameGet200Response struct {
 	State string `json:"State,omitempty"`
 	Country string `json:"Country,omitempty"`
 	Name string `json:"Name,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
-	Privileged *PerlBooleanInteger `json:"Privileged,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
+	Privileged int64 `json:"Privileged,omitempty"`
 	Memberships []GroupReference `json:"Memberships,omitempty"`
 	Hyperlinks []UserIdNameGet200ResponseAllOfHyperlinksInner `json:"_hyperlinks,omitempty"`
 }

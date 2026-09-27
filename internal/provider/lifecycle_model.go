@@ -17,14 +17,14 @@ type LifecycleModel struct {
 	Initial jsontypes.Normalized `tfsdk:"initial"`
 	Active jsontypes.Normalized `tfsdk:"active"`
 	Inactive jsontypes.Normalized `tfsdk:"inactive"`
-	Defaults types.String `tfsdk:"defaults"`
-	Transitions types.String `tfsdk:"transitions"`
-	Rights types.String `tfsdk:"rights"`
+	Defaults jsontypes.Normalized `tfsdk:"defaults"`
+	Transitions jsontypes.Normalized `tfsdk:"transitions"`
+	Rights jsontypes.Normalized `tfsdk:"rights"`
 	Actions jsontypes.Normalized `tfsdk:"actions"`
-	Colors types.String `tfsdk:"colors"`
+	Colors jsontypes.Normalized `tfsdk:"colors"`
 	Name types.String `tfsdk:"name"`
-	CanonicalCase types.String `tfsdk:"canonical_case"`
-	Url types.String `tfsdk:"_url"`
+	CanonicalCase jsontypes.Normalized `tfsdk:"canonical_case"`
+	Url types.String `tfsdk:"url"`
 }
 
 // ToClientModel converts a Terraform model to a client model.
@@ -67,9 +67,29 @@ func (m *LifecycleModel) ToUpdateModel() (*client.LifecycleConfiguration, error)
 			return out, fmt.Errorf("inactive: %w", err)
 		}
 	}
+	if !m.Defaults.IsNull() && !m.Defaults.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.Defaults.ValueString()), &out.Defaults); err != nil {
+			return out, fmt.Errorf("defaults: %w", err)
+		}
+	}
+	if !m.Transitions.IsNull() && !m.Transitions.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.Transitions.ValueString()), &out.Transitions); err != nil {
+			return out, fmt.Errorf("transitions: %w", err)
+		}
+	}
+	if !m.Rights.IsNull() && !m.Rights.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.Rights.ValueString()), &out.Rights); err != nil {
+			return out, fmt.Errorf("rights: %w", err)
+		}
+	}
 	if !m.Actions.IsNull() && !m.Actions.IsUnknown() {
 		if err := json.Unmarshal([]byte(m.Actions.ValueString()), &out.Actions); err != nil {
 			return out, fmt.Errorf("actions: %w", err)
+		}
+	}
+	if !m.Colors.IsNull() && !m.Colors.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.Colors.ValueString()), &out.Colors); err != nil {
+			return out, fmt.Errorf("colors: %w", err)
 		}
 	}
 	return out, nil
@@ -124,12 +144,77 @@ func (m *LifecycleModel) FromClientModel(c *client.LifecycleDocument) {
 	// not already say -- see jsonSupersetOf. A server that merely filled in its
 	// own defaults has told us nothing, and recording it would fail the apply
 	// and then propose an update forever.
+	if encoded, err := json.Marshal(c.Defaults); err == nil {
+		if m.Defaults.IsNull() || m.Defaults.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Defaults.ValueString()) {
+			m.Defaults = jsontypes.NewNormalizedValue(string(encoded))
+		}
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
+	if encoded, err := json.Marshal(c.Transitions); err == nil {
+		if m.Transitions.IsNull() || m.Transitions.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Transitions.ValueString()) {
+			m.Transitions = jsontypes.NewNormalizedValue(string(encoded))
+		}
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
+	if encoded, err := json.Marshal(c.Rights); err == nil {
+		if m.Rights.IsNull() || m.Rights.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Rights.ValueString()) {
+			m.Rights = jsontypes.NewNormalizedValue(string(encoded))
+		}
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.Actions); err == nil {
 		if m.Actions.IsNull() || m.Actions.IsUnknown() ||
 			!jsonSupersetOf(string(encoded), m.Actions.ValueString()) {
 			m.Actions = jsontypes.NewNormalizedValue(string(encoded))
 		}
 	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
+	if encoded, err := json.Marshal(c.Colors); err == nil {
+		if m.Colors.IsNull() || m.Colors.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Colors.ValueString()) {
+			m.Colors = jsontypes.NewNormalizedValue(string(encoded))
+		}
+	}
 	m.Name = types.StringValue(c.Name)
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
+	if encoded, err := json.Marshal(c.CanonicalCase); err == nil {
+		if m.CanonicalCase.IsNull() || m.CanonicalCase.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.CanonicalCase.ValueString()) {
+			m.CanonicalCase = jsontypes.NewNormalizedValue(string(encoded))
+		}
+	}
 	m.Url = types.StringValue(c.Url)
 }

@@ -54,14 +54,17 @@ func (d *LifecycleDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				Description: "Statuses meaning work has stopped.",
 			},
 			"defaults": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Which status an action moves an object to.",
 			},
 			"transitions": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Which statuses each status may move to. The empty key is the transition into the lifecycle.",
 			},
 			"rights": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "The right required to make a transition.",
 			},
@@ -71,6 +74,7 @@ func (d *LifecycleDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				Description: "The transitions offered in the UI, as alternating \"from -> to\" strings and their configuration.",
 			},
 			"colors": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "A colour per status, as shown in the UI.",
 			},
@@ -79,10 +83,11 @@ func (d *LifecycleDataSource) Schema(_ context.Context, _ datasource.SchemaReque
 				Description: "",
 			},
 			"canonical_case": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "The capitalisation RT treats as canonical for each status, keyed by the lower-case form.",
 			},
-			"_url": schema.StringAttribute{
+			"url": schema.StringAttribute{
 				Computed:    true,
 				Description: "An URL pointing somewhere in the web",
 			},

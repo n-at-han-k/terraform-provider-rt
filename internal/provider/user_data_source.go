@@ -145,7 +145,7 @@ func (d *UserDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 				Computed:    true,
 				Description: "",
 			},
-			"privileged": schema.StringAttribute{
+			"privileged": schema.Int64Attribute{
 				Computed:    true,
 				Description: "Can this user be granted rights in RT?",
 			},
@@ -154,7 +154,7 @@ func (d *UserDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, r
 				Computed:    true,
 				Description: "",
 			},
-			"_hyperlinks": schema.StringAttribute{
+			"hyperlinks": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",

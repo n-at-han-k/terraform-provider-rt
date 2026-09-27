@@ -26,6 +26,6 @@ type UserPostRequest struct {
 	Country string `json:"Country,omitempty"`
 	Password string `json:"Password,omitempty"`
 	Name string `json:"Name,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
-	Privileged *PerlBooleanInteger `json:"Privileged,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
+	Privileged int64 `json:"Privileged,omitempty"`
 }

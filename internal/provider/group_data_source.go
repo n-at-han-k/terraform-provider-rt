@@ -69,7 +69,7 @@ func (d *GroupDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, 
 				Computed:    true,
 				Description: "",
 			},
-			"_hyperlinks": schema.StringAttribute{
+			"hyperlinks": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Things and operations related to this queue.",

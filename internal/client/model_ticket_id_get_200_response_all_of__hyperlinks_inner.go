@@ -8,7 +8,7 @@ type TicketIdGet200ResponseAllOfHyperlinksInner struct {
 	Url string `json:"_url,omitempty"`
 	Id RTID `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
-	Type *TypeEnum `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 	From string `json:"from,omitempty"`
 	To string `json:"to,omitempty"`
 	Update string `json:"update,omitempty"`

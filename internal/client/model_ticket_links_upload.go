@@ -4,10 +4,10 @@ package client
 
 // TicketLinksUpload - Ticket links when creating or updating a ticket.
 type TicketLinksUpload struct {
-	DependsOn *TicketLink `json:"DependsOn,omitempty"`
-	Child *TicketLink `json:"Child,omitempty"`
-	ReferredToBy *TicketLink `json:"ReferredToBy,omitempty"`
-	Parent *TicketLink `json:"Parent,omitempty"`
-	DependedOnBy *TicketLink `json:"DependedOnBy,omitempty"`
-	RefersTo *TicketLink `json:"RefersTo,omitempty"`
+	DependsOn interface{} `json:"DependsOn,omitempty"`
+	Child interface{} `json:"Child,omitempty"`
+	ReferredToBy interface{} `json:"ReferredToBy,omitempty"`
+	Parent interface{} `json:"Parent,omitempty"`
+	DependedOnBy interface{} `json:"DependedOnBy,omitempty"`
+	RefersTo interface{} `json:"RefersTo,omitempty"`
 }

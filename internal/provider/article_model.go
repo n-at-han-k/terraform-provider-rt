@@ -67,6 +67,9 @@ func (m *ArticleModel) ToClientModel() (*client.ArticlePostRequest, error) {
 	if !m.URI.IsNull() && !m.URI.IsUnknown() {
 		out.URI = m.URI.ValueString()
 	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
+	}
 	return out, nil
 }
 
@@ -106,6 +109,9 @@ func (m *ArticleModel) ToUpdateModel() (*client.ArticleIdPutRequest, error) {
 	}
 	if !m.URI.IsNull() && !m.URI.IsUnknown() {
 		out.URI = m.URI.ValueString()
+	}
+	if !m.Disabled.IsNull() && !m.Disabled.IsUnknown() {
+		out.Disabled = m.Disabled.ValueString()
 	}
 	return out, nil
 }
@@ -161,4 +167,5 @@ func (m *ArticleModel) FromClientModel(c *client.ArticleIdGet200Response) {
 		m.Parent = jsontypes.NewNormalizedNull()
 	}
 	m.URI = types.StringValue(c.URI)
+	m.Disabled = types.StringValue(c.Disabled)
 }

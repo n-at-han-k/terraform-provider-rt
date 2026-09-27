@@ -12,8 +12,8 @@ type CustomfieldIdPutRequest struct {
 	Description string `json:"Description,omitempty"`
 	EntryHint string `json:"EntryHint,omitempty"`
 	MaxValues string `json:"MaxValues,omitempty"`
-	UniqueValues *PerlBoolean `json:"UniqueValues,omitempty"`
+	UniqueValues string `json:"UniqueValues,omitempty"`
 	Pattern string `json:"Pattern,omitempty"`
 	SortOrder string `json:"SortOrder,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 }

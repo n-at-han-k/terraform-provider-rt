@@ -6,5 +6,5 @@ package client
 type GroupReference struct {
 	Url string `json:"_url,omitempty"`
 	Id RTID `json:"id,omitempty"`
-	Type *ConstantGroup `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 }

@@ -11,6 +11,6 @@ type QueueIdNamePutRequest struct {
 	SortOrder string `json:"SortOrder,omitempty"`
 	CorrespondAddress string `json:"CorrespondAddress,omitempty"`
 	CommentAddress string `json:"CommentAddress,omitempty"`
-	SLADisabled *PerlBoolean `json:"SLADisabled,omitempty"`
-	Disabled *PerlBoolean `json:"Disabled,omitempty"`
+	SLADisabled string `json:"SLADisabled,omitempty"`
+	Disabled string `json:"Disabled,omitempty"`
 }

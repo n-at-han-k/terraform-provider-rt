@@ -6,5 +6,5 @@ package client
 type GenericObject struct {
 	Url string `json:"_url,omitempty"`
 	Id RTID `json:"id,omitempty"`
-	Type *TypeEnum `json:"type,omitempty"`
+	Type string `json:"type,omitempty"`
 }
